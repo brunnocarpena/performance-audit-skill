@@ -1,0 +1,9 @@
+.DS_Store
+.idea/
+.vscode/
+*.log
+*.tmp
+node_modules/
+psi-*.json
+lh-*.json
+.claude/state/
