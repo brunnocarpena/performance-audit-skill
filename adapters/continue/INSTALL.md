@@ -13,7 +13,7 @@
 ```bash
 cd your-project/
 mkdir -p .continue/rules
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/continue/performance-audit.md -o .continue/rules/performance-audit.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/continue/performance-audit.md -o .continue/rules/performance-audit.md
 ```
 
 ## How to invoke
@@ -29,13 +29,13 @@ globs: ["**/*.html", "**/*.tsx", "**/*.jsx", "**/landing/**", "**/pages/**"]
 ## Limitations vs Claude Code
 
 - **No hooks** — Continue has no Stop hook equivalent.
-- **No Task tool** — for independent audit, open new Continue chat and paste [auditor-prompt](https://github.com/xBelowZero/performance-audit-skill/blob/main/auditor-prompt.md).
+- **No Task tool** — for independent audit, open new Continue chat and paste [auditor-prompt](https://github.com/brunnocarpena/performance-audit-skill/blob/main/auditor-prompt.md).
 - **No PSI runner** — paste lab/field data into chat.
 
 ## Updating
 
 ```bash
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/continue/performance-audit.md -o .continue/rules/performance-audit.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/continue/performance-audit.md -o .continue/rules/performance-audit.md
 ```
 
 ## Reference

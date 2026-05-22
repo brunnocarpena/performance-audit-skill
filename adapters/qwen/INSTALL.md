@@ -13,13 +13,13 @@
 Project-local:
 ```bash
 cd your-project/
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/qwen/QWEN.md -o QWEN.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/qwen/QWEN.md -o QWEN.md
 ```
 
 Global:
 ```bash
 mkdir -p ~/.qwen
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/qwen/QWEN.md -o ~/.qwen/QWEN.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/qwen/QWEN.md -o ~/.qwen/QWEN.md
 ```
 
 ## How to invoke
@@ -29,13 +29,13 @@ Ambient. Verify with `/memory show` in Qwen Code.
 ## Limitations vs Claude Code
 
 - **No hooks** — Qwen Code has no Stop hook equivalent.
-- **No Task tool** — to dispatch a fresh auditor, open a new Qwen Code session and paste [auditor-prompt](https://github.com/xBelowZero/performance-audit-skill/blob/main/auditor-prompt.md).
+- **No Task tool** — to dispatch a fresh auditor, open a new Qwen Code session and paste [auditor-prompt](https://github.com/brunnocarpena/performance-audit-skill/blob/main/auditor-prompt.md).
 - **No PSI runner** — paste lab/field data into chat.
 
 ## Updating
 
 ```bash
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/qwen/QWEN.md -o QWEN.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/qwen/QWEN.md -o QWEN.md
 ```
 
 ## Reference

@@ -14,7 +14,7 @@
 2. Create new prompt:
    - Name: `performance-audit`
    - Description: `Audit page performance against Lighthouse/PSI/CWV before deploy`
-   - Definition: paste content of [`cody-prompt.md`](https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/cody/cody-prompt.md)
+   - Definition: paste content of [`cody-prompt.md`](https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/cody/cody-prompt.md)
 3. Save
 
 ## Quick install (workspace command, alternative)
@@ -51,7 +51,7 @@ In Cody Chat:
 
 ## Updating
 
-Edit the saved prompt in Prompt Library with the latest content from [`cody-prompt.md`](https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/cody/cody-prompt.md).
+Edit the saved prompt in Prompt Library with the latest content from [`cody-prompt.md`](https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/cody/cody-prompt.md).
 
 ## Reference
 

@@ -45,7 +45,7 @@
 # 1. 克隆到 ~/.claude/skills/
 mkdir -p ~/.claude/skills
 cd ~/.claude/skills
-git clone https://github.com/xBelowZero/performance-audit-skill.git performance-audit
+git clone https://github.com/brunnocarpena/performance-audit-skill.git performance-audit
 
 # 2.（可选但推荐）配置 PageSpeed Insights API key
 # 无 key：每个 IP 大约 1 次查询/天。有 key：400 QPS / 25k 查询/天。
@@ -143,7 +143,7 @@ Google 标准：**CrUX 中 75% 用户的 p75 ≥ "good"**。
 ## 灵感与参考
 
 结构灵感来自：
-- [xBelowZero/congruence-skill](https://github.com/xBelowZero/congruence-skill) —— 强制证据 + Iron Law 模式。
+- [brunnocarpena/congruence-skill](https://github.com/brunnocarpena/congruence-skill) —— 强制证据 + Iron Law 模式。
 - [addyosmani/web-quality-skills](https://github.com/addyosmani/web-quality-skills) —— Chrome 团队官方为 Lighthouse + CWV 出的 Agent Skills。
 - [web.dev/articles/vitals](https://web.dev/articles/vitals) —— 阈值的权威来源。
 - [GoogleChrome/lighthouse-ci](https://github.com/GoogleChrome/lighthouse-ci) —— PR 中的 budget 和回归。

@@ -13,7 +13,7 @@
 ```bash
 cd your-project/
 mkdir -p .junie
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/jetbrains-junie/guidelines.md -o .junie/guidelines.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/jetbrains-junie/guidelines.md -o .junie/guidelines.md
 ```
 
 Alternatively, JetBrains now also supports `AGENTS.md` at project root — see the `adapters/codex/` for that route.
@@ -25,14 +25,14 @@ Ambient. Junie auto-discovers `.junie/guidelines.md`.
 ## Limitations vs Claude Code
 
 - **No hooks** — Junie has no Stop hook equivalent.
-- **No Task tool** — for independent audit, open new Junie session and paste [auditor-prompt](https://github.com/xBelowZero/performance-audit-skill/blob/main/auditor-prompt.md).
+- **No Task tool** — for independent audit, open new Junie session and paste [auditor-prompt](https://github.com/brunnocarpena/performance-audit-skill/blob/main/auditor-prompt.md).
 - **No PSI runner** — paste lab/field data into chat.
 - **IDE-only** — Junie requires JetBrains IDE; no CLI usage.
 
 ## Updating
 
 ```bash
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/jetbrains-junie/guidelines.md -o .junie/guidelines.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/jetbrains-junie/guidelines.md -o .junie/guidelines.md
 ```
 
 ## Reference

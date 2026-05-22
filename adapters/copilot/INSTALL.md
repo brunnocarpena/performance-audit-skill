@@ -13,7 +13,7 @@
 ```bash
 cd your-project/
 mkdir -p .github
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/copilot/copilot-instructions.md \
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/copilot/copilot-instructions.md \
   -o .github/copilot-instructions.md
 ```
 
@@ -28,14 +28,14 @@ To force the audit, ask explicitly: `audit page performance of these changes bef
 ## Limitations vs Claude Code
 
 - **No hooks** — Copilot has no Stop/PostToolUse equivalent. The audit relies on Copilot reading the instructions.
-- **No Task tool** — to dispatch an independent auditor, open a new Copilot Chat session and paste the [auditor-prompt](https://github.com/xBelowZero/performance-audit-skill/blob/main/auditor-prompt.md).
+- **No Task tool** — to dispatch an independent auditor, open a new Copilot Chat session and paste the [auditor-prompt](https://github.com/brunnocarpena/performance-audit-skill/blob/main/auditor-prompt.md).
 - **No PSI / Lighthouse runner** — Copilot can't fetch metrics on its own. Paste your PSI report or CrUX export into chat.
 - **Repo-scoped** — instructions apply only to this repo.
 
 ## Updating
 
 ```bash
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/copilot/copilot-instructions.md \
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/copilot/copilot-instructions.md \
   -o .github/copilot-instructions.md
 ```
 

@@ -12,7 +12,7 @@
 
 ```bash
 cd your-project/
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/codex/AGENTS.md -o AGENTS.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/codex/AGENTS.md -o AGENTS.md
 ```
 
 If you already have an `AGENTS.md`, append the performance-audit section manually rather than overwriting.
@@ -24,14 +24,14 @@ Ambient. Codex auto-loads `AGENTS.md` from CWD and walks up.
 ## Limitations vs Claude Code
 
 - **No hooks** — Codex CLI cannot auto-trigger the audit at end of turn.
-- **No Task tool** — to dispatch a fresh auditor, open a new Codex session and paste [auditor-prompt](https://github.com/xBelowZero/performance-audit-skill/blob/main/auditor-prompt.md).
+- **No Task tool** — to dispatch a fresh auditor, open a new Codex session and paste [auditor-prompt](https://github.com/brunnocarpena/performance-audit-skill/blob/main/auditor-prompt.md).
 - **No PSI runner** — paste lab/field data into chat.
 - **AGENTS.md is shared** — if other tools (Cursor, Aider) also read it, the methodology applies cross-tool.
 
 ## Updating
 
 ```bash
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/codex/AGENTS.md -o AGENTS.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/codex/AGENTS.md -o AGENTS.md
 ```
 
 ## Reference

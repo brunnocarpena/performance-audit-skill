@@ -73,7 +73,7 @@ Score alone never approves a deploy. Core Web Vitals "good" on **field** is the 
 
 ## Full methodology
 
-For the full workflow (scoping rubric, issue catalog by stack, report template, rollback playbooks): https://github.com/xBelowZero/performance-audit-skill/blob/main/SKILL.md
+For the full workflow (scoping rubric, issue catalog by stack, report template, rollback playbooks): https://github.com/brunnocarpena/performance-audit-skill/blob/main/SKILL.md
 
 
 ## How to use
@@ -82,4 +82,4 @@ At session start, paste this entire prompt. When I share a page / diff / PSI rep
 
 ---
 
-**Full skill:** https://github.com/xBelowZero/performance-audit-skill
+**Full skill:** https://github.com/brunnocarpena/performance-audit-skill

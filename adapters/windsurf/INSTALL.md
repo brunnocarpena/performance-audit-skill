@@ -13,7 +13,7 @@
 ```bash
 cd your-project/
 mkdir -p .windsurf/rules
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/windsurf/performance-audit.md -o .windsurf/rules/performance-audit.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/windsurf/performance-audit.md -o .windsurf/rules/performance-audit.md
 ```
 
 ## How to invoke
@@ -30,13 +30,13 @@ Other trigger modes (edit frontmatter):
 
 - **12k char limit per workspace rule** (6k global) — methodology fits comfortably.
 - **No hooks** — Windsurf has no Stop hook equivalent.
-- **No Task tool** — for independent audit, open new Cascade session and paste [auditor-prompt](https://github.com/xBelowZero/performance-audit-skill/blob/main/auditor-prompt.md).
+- **No Task tool** — for independent audit, open new Cascade session and paste [auditor-prompt](https://github.com/brunnocarpena/performance-audit-skill/blob/main/auditor-prompt.md).
 - **No PSI runner** — paste lab/field data into chat.
 
 ## Updating
 
 ```bash
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/windsurf/performance-audit.md -o .windsurf/rules/performance-audit.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/windsurf/performance-audit.md -o .windsurf/rules/performance-audit.md
 ```
 
 ## Reference

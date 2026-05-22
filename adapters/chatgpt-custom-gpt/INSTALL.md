@@ -14,7 +14,7 @@
 2. Tab "Configure"
 3. Name: `Performance Auditor`
 4. Description: `Audits page performance against Lighthouse/PSI/CWV while preserving layout, tracking, UTMs, forms, SEO, a11y`
-5. Instructions field: paste the entire content of [`instructions.md`](https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/chatgpt-custom-gpt/instructions.md)
+5. Instructions field: paste the entire content of [`instructions.md`](https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/chatgpt-custom-gpt/instructions.md)
 6. Conversation starters (optional):
    - "Audit this landing page before I deploy"
    - "Check this PSI report and recommend fixes"
@@ -46,7 +46,7 @@ Audit page performance of the uploaded HTML/CSS/JS against the attached PSI repo
 
 ## Updating
 
-Edit your GPT in the Builder and replace the Instructions with the latest [`instructions.md`](https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/chatgpt-custom-gpt/instructions.md).
+Edit your GPT in the Builder and replace the Instructions with the latest [`instructions.md`](https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/chatgpt-custom-gpt/instructions.md).
 
 ## Reference
 

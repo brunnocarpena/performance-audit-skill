@@ -73,7 +73,7 @@ Score alone never approves a deploy. Core Web Vitals "good" on **field** is the 
 
 ## Full methodology
 
-For the full workflow (scoping rubric, issue catalog by stack, report template, rollback playbooks): https://github.com/xBelowZero/performance-audit-skill/blob/main/SKILL.md
+For the full workflow (scoping rubric, issue catalog by stack, report template, rollback playbooks): https://github.com/brunnocarpena/performance-audit-skill/blob/main/SKILL.md
 
 
 ---

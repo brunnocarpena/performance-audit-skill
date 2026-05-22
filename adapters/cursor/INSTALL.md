@@ -14,14 +14,14 @@
 ```bash
 cd your-project/
 mkdir -p .cursor/rules
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/cursor/performance-audit.mdc \
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/cursor/performance-audit.mdc \
   -o .cursor/rules/performance-audit.mdc
 ```
 
 Or clone the whole skill:
 
 ```bash
-git clone https://github.com/xBelowZero/performance-audit-skill.git /tmp/performance-audit
+git clone https://github.com/brunnocarpena/performance-audit-skill.git /tmp/performance-audit
 mkdir -p .cursor/rules
 cp /tmp/performance-audit/adapters/cursor/performance-audit.mdc .cursor/rules/
 ```
@@ -43,14 +43,14 @@ Optimize LCP on the homepage. Before shipping, follow @performance-audit.
 ## Limitations vs Claude Code
 
 - **No Stop hook** — Cursor cannot auto-trigger the audit at end of turn. You must mention `@performance-audit`.
-- **No Task tool** — to run a fresh second-opinion audit, open a new Cursor chat and paste the [auditor-prompt](https://github.com/xBelowZero/performance-audit-skill/blob/main/auditor-prompt.md).
+- **No Task tool** — to run a fresh second-opinion audit, open a new Cursor chat and paste the [auditor-prompt](https://github.com/brunnocarpena/performance-audit-skill/blob/main/auditor-prompt.md).
 - **`globs` field** restricts where the rule applies — adjust the frontmatter glob list to match your front-end / landing-page paths.
 - **No PSI / Lighthouse runner** — Cursor can't fetch field data on its own. Paste your PSI report or CrUX export into chat.
 
 ## Updating
 
 ```bash
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/cursor/performance-audit.mdc \
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/cursor/performance-audit.mdc \
   -o .cursor/rules/performance-audit.mdc
 ```
 

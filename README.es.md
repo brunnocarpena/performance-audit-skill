@@ -45,7 +45,7 @@ Invocar con `/performance-audit` o "auditá la performance de esta página".
 # 1. Clonar dentro de ~/.claude/skills/
 mkdir -p ~/.claude/skills
 cd ~/.claude/skills
-git clone https://github.com/xBelowZero/performance-audit-skill.git performance-audit
+git clone https://github.com/brunnocarpena/performance-audit-skill.git performance-audit
 
 # 2. (Opcional pero recomendado) configurar API key del PageSpeed Insights
 # Sin key: ~1 query/día por IP. Con key: 400 QPS / 25k queries/día.
@@ -143,7 +143,7 @@ Criterio Google: **p75 ≥ "good" en el 75% de los usuarios en CrUX**.
 ## Inspiración y referencias
 
 Estructura inspirada en:
-- [xBelowZero/congruence-skill](https://github.com/xBelowZero/congruence-skill) — patrón de evidencia obligatoria + Iron Law.
+- [brunnocarpena/congruence-skill](https://github.com/brunnocarpena/congruence-skill) — patrón de evidencia obligatoria + Iron Law.
 - [addyosmani/web-quality-skills](https://github.com/addyosmani/web-quality-skills) — Agent Skills oficiales del equipo Chrome para Lighthouse + CWV.
 - [web.dev/articles/vitals](https://web.dev/articles/vitals) — fuente canónica de los thresholds.
 - [GoogleChrome/lighthouse-ci](https://github.com/GoogleChrome/lighthouse-ci) — budgets y regresiones en PR.

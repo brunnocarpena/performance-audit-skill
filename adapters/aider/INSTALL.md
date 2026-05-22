@@ -12,7 +12,7 @@
 
 ```bash
 cd your-project/
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/aider/CONVENTIONS.md -o CONVENTIONS.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/aider/CONVENTIONS.md -o CONVENTIONS.md
 ```
 
 Then add to `.aider.conf.yml` at the project root (create if missing):
@@ -35,14 +35,14 @@ Ambient. Aider treats the file as standing instructions.
 ## Limitations vs Claude Code
 
 - **No hooks** — Aider has no Stop hook equivalent.
-- **No Task tool** — to dispatch an independent auditor, open a new Aider session and paste [auditor-prompt](https://github.com/xBelowZero/performance-audit-skill/blob/main/auditor-prompt.md).
+- **No Task tool** — to dispatch an independent auditor, open a new Aider session and paste [auditor-prompt](https://github.com/brunnocarpena/performance-audit-skill/blob/main/auditor-prompt.md).
 - **No PSI runner** — paste lab/field data into chat.
 - **No subagents** — audit is enforced by the same model handling implementation.
 
 ## Updating
 
 ```bash
-curl -L https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/aider/CONVENTIONS.md -o CONVENTIONS.md
+curl -L https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/aider/CONVENTIONS.md -o CONVENTIONS.md
 ```
 
 ## Reference

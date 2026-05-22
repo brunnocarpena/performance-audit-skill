@@ -11,7 +11,7 @@
 ## Quick install
 
 1. Open a fresh chat with your preferred LLM
-2. Copy the entire content of [`performance-audit-prompt.md`](https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/generic-prompt/performance-audit-prompt.md)
+2. Copy the entire content of [`performance-audit-prompt.md`](https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/generic-prompt/performance-audit-prompt.md)
 3. Paste it as your first message
 4. Continue normal conversation — the LLM will audit your page-performance changes
 
@@ -39,8 +39,8 @@ I want to ship this hero change: [paste]. Current PSI report: [paste]. CrUX: [pa
 
 ## Updating
 
-Re-copy the latest version of [`performance-audit-prompt.md`](https://raw.githubusercontent.com/xBelowZero/performance-audit-skill/main/adapters/generic-prompt/performance-audit-prompt.md) any time.
+Re-copy the latest version of [`performance-audit-prompt.md`](https://raw.githubusercontent.com/brunnocarpena/performance-audit-skill/main/adapters/generic-prompt/performance-audit-prompt.md) any time.
 
 ## Reference
 
-- Full skill: https://github.com/xBelowZero/performance-audit-skill
+- Full skill: https://github.com/brunnocarpena/performance-audit-skill
