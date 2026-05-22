@@ -1,158 +1,158 @@
 ---
 name: performance-audit
-description: Use sempre que precisar auditar performance de uma página (landing, WordPress/Elementor, HTML/Tailwind, Next.js, página de captura) sob a ótica do Google PageSpeed Insights / Lighthouse, OU quando estiver desenvolvendo uma página nova e quiser garantir boa pontuação desde o início. TRIGGER quando o agente menciona "PageSpeed", "Lighthouse", "Core Web Vitals", "LCP", "CLS", "INP", "TBT", "performance", "página lenta", "score baixo", "otimizar página"; quando a sessão toca arquivos de hero, imagens, fontes, CSS crítico, GTM/Pixel/Analytics, plugins de cache, Elementor; antes de qualquer deploy de página pública. SKIP em mudanças puramente internas (API, jobs, schema) sem impacto na renderização do front.
-argument-hint: [url-ou-escopo?] [--mode=audit|build] [--target=mobile|desktop|both]
+description: Use whenever you need to audit the performance of a page (landing page, WordPress/Elementor, HTML/Tailwind, Next.js, capture page) through the lens of Google PageSpeed Insights / Lighthouse, OR when you're building a new page and want to guarantee a good score from the start. TRIGGER when the agent mentions "PageSpeed", "Lighthouse", "Core Web Vitals", "LCP", "CLS", "INP", "TBT", "performance", "slow page", "low score", "page optimization"; when the session touches hero, image, font, critical CSS, GTM/Pixel/Analytics, cache plugin or Elementor files; before any deploy of a public page. SKIP for purely internal changes (API, jobs, schema) with no front-end render impact.
+argument-hint: [url-or-scope?] [--mode=audit|build] [--target=mobile|desktop|both]
 allowed-tools: Read, Grep, Glob, Bash(curl:*), Bash(git diff:*), Bash(git status:*), Bash(ls:*), Bash(find:*), Bash(wc:*), WebFetch, Task
 ---
 
 # Performance Audit
 
-Auditoria de performance de páginas sob a ótica do **Google PageSpeed Insights / Lighthouse**, sem sacrificar layout, rastreamento, UTMs, SEO ou conversão.
+Page performance auditing through the lens of **Google PageSpeed Insights / Lighthouse**, without sacrificing layout, tracking, UTMs, SEO or conversion.
 
-**Esta skill não é uma otimização cega.** É uma auditoria com critério, que separa o que o Lighthouse mede de o que o usuário sente, e prioriza correções que entregam impacto real sem quebrar a página.
+**This skill is not blind optimization.** It is a critical audit that separates what Lighthouse measures from what the user actually feels, and prioritizes fixes that deliver real impact without breaking the page.
 
-## Princípio central
+## Core principle
 
 ```
-PERFORMANCE NÃO É SCORE. É ENTREGAR A PRIMEIRA DOBRA RÁPIDO,
-MANTER ESTABILIDADE VISUAL E NÃO QUEBRAR TRACKING NEM CONVERSÃO.
+PERFORMANCE IS NOT A SCORE. IT IS DELIVERING THE FIRST FOLD FAST,
+KEEPING VISUAL STABILITY, AND NOT BREAKING TRACKING OR CONVERSION.
 ```
 
-Um score 100 com formulário quebrado, Pixel não disparando ou UTM perdido **é uma regressão**, não uma vitória. Toda recomendação desta skill deve preservar:
+A 100 score with a broken form, a Pixel that doesn't fire, or a lost UTM **is a regression**, not a win. Every recommendation in this skill must preserve:
 
-1. **Layout visual** — sem CLS introduzido, sem quebra de grid/componentes.
-2. **Tracking** — Meta Pixel, GTM, GA4, Hotmart, ActiveCampaign, Make, conversões.
-3. **UTMs e parâmetros de URL** — nunca dropar query string em redirects/canonical.
-4. **Funcionalidade de formulários** — campos, validação, action, integrações.
+1. **Visual layout** — no introduced CLS, no broken grid/components.
+2. **Tracking** — Meta Pixel, GTM, GA4, Hotmart, ActiveCampaign, Make, conversions.
+3. **UTMs and URL parameters** — never drop query string in redirects/canonical.
+4. **Form functionality** — fields, validation, action, integrations.
 5. **SEO** — meta tags, structured data, hreflang, canonical, robots.
-6. **Acessibilidade básica** — alt, labels, contraste, foco.
+6. **Basic accessibility** — alt, labels, contrast, focus.
 
-Se uma "otimização" coloca qualquer um destes em risco, **não recomende sem alerta explícito**.
+If an "optimization" puts any of these at risk, **do not recommend it without an explicit warning**.
 
-## Modos de operação
+## Operating modes
 
-A skill opera em dois modos. Identifique o modo no início:
+The skill operates in two modes. Identify the mode upfront:
 
-### Modo `audit` — auditoria de página existente
+### `audit` mode — auditing an existing page
 
-Inputs aceitos:
-- URL pública.
-- Print/JSON do PageSpeed Insights.
-- Relatório Lighthouse (HTML/JSON).
-- Código-fonte (HTML, template Elementor, componente Next.js).
-- Trecho específico (hero, head, footer).
+Accepted inputs:
+- Public URL.
+- PageSpeed Insights screenshot/JSON.
+- Lighthouse report (HTML/JSON).
+- Source code (HTML, Elementor template, Next.js component).
+- Specific snippet (hero, head, footer).
 
-Output: diagnóstico priorizado + plano de correção (ver [references/report-format.md](references/report-format.md)).
+Output: prioritized diagnosis + fix plan (see [references/report-format.md](references/report-format.md)).
 
-### Modo `build` — desenvolvendo página nova
+### `build` mode — developing a new page
 
-Aplicar boas práticas **antes** do código existir. Revisar HTML/CSS/JS no commit. Validar hero, imagens, fontes, scripts e tracking conforme as checks em [checks/](checks/).
+Apply best practices **before** code exists. Review HTML/CSS/JS at commit time. Validate hero, images, fonts, scripts and tracking against the checks in [checks/](checks/).
 
-Output: checklist pré-deploy + apontamentos de risco no código atual.
+Output: pre-deploy checklist + risk notes on current code.
 
 ## Workflow
 
-### 1. Identificar escopo e modo
+### 1. Identify scope and mode
 
-- Se houver URL ou relatório Lighthouse → `audit`.
-- Se estiver editando arquivos de página/componente sem relatório → `build`.
-- Se ambíguo, perguntar **uma vez**: "Você quer auditar página existente ou revisar código antes de deploy?"
+- If there's a URL or Lighthouse report → `audit`.
+- If editing page/component files without a report → `build`.
+- If ambiguous, ask **once**: "Do you want to audit an existing page or review code before deploy?"
 
-### 2. Coletar evidência
+### 2. Collect evidence
 
-**Pré-check obrigatório — API key do PageSpeed Insights**
+**Mandatory pre-check — PageSpeed Insights API key**
 
-Antes de qualquer coleta, verificar se `$PSI_API_KEY` está configurada:
+Before any collection, verify `$PSI_API_KEY` is configured:
 
 ```bash
 if [ -z "$PSI_API_KEY" ]; then
-  echo "PSI_API_KEY ausente"
+  echo "PSI_API_KEY missing"
 fi
 ```
 
-**Se a variável NÃO estiver setada, pausar e avisar o usuário com este texto** (adaptar tom à conversa, manter o conteúdo):
+**If the variable is NOT set, pause and warn the user with this message** (adapt tone to conversation, keep the content):
 
-> ⚠️ Você ainda não configurou a chave da API do PageSpeed Insights (`$PSI_API_KEY`). Sem ela eu fico limitado a ~1 query/dia keyed por IP — e bate quota rápido, me forçando a fazer auditoria só estática (sem score, sem field data CrUX, sem audits do Lighthouse).
+> ⚠️ You haven't configured the PageSpeed Insights API key (`$PSI_API_KEY`) yet. Without it I'm limited to ~1 query/day keyed by IP — quota hits fast and I'm forced to do static-only audit (no score, no CrUX field data, no Lighthouse audits).
 >
-> **Com a chave configurada, eu consigo ser muito mais assertivo:** trago Performance Score real, LCP/CLS/INP/TBT/FCP medidos, opportunities priorizadas, breakdown do main thread, scripts pesados identificados, e dados de campo (CrUX) de usuários reais nos últimos 28 dias.
+> **With the key configured, I can be much more accurate:** real Performance Score, measured LCP/CLS/INP/TBT/FCP, prioritized opportunities, main thread breakdown, heavy script identification, and field data (CrUX) from real users in the last 28 days.
 >
 > Setup (2 min):
-> 1. https://console.cloud.google.com/apis/credentials → criar API key
-> 2. Habilitar **PageSpeed Insights API** e **Chrome UX Report API** em APIs & Services → Library
-> 3. Adicionar no `~/.zshrc`:
+> 1. https://console.cloud.google.com/apis/credentials → create API key
+> 2. Enable **PageSpeed Insights API** and **Chrome UX Report API** under APIs & Services → Library
+> 3. Add to `~/.zshrc`:
 >    ```bash
 >    export PSI_API_KEY="AIza..."
 >    export CRUX_API_KEY="$PSI_API_KEY"
 >    ```
-> 4. `source ~/.zshrc` ou abrir terminal novo
+> 4. `source ~/.zshrc` or open a new terminal
 >
-> Quer configurar agora, ou prefere que eu siga com auditoria estática limitada?
+> Want to set it up now, or shall I proceed with limited static audit?
 
-Se o usuário optar por configurar: aguardar e validar com `curl` de teste. Se optar por seguir sem: marcar no relatório final **"Auditoria parcial — sem dados PSI/CrUX"** e basear conclusões apenas em análise estática (HTML/headers/assets).
+If the user opts to configure: wait and validate with a `curl` test. If they opt to proceed without: mark the final report as **"Partial audit — no PSI/CrUX data"** and base conclusions on static analysis only (HTML/headers/assets).
 
-**Coleta efetiva:**
+**Effective collection:**
 
-| Fonte | O que extrair |
-|-------|---------------|
-| URL pública | Rodar `curl -sI` para headers, baixar HTML, inspecionar `<head>`, ordem dos scripts, imagens do hero |
-| Relatório Lighthouse | Métricas (LCP/CLS/INP/TBT/FCP/SI), top opportunities, diagnostics, treemap JS |
-| Código | Hero, ordem de `<link>`/`<script>`, atributos de imagem, fontes, CSS crítico, plugins (WP), bundle (Next) |
-| PageSpeed Insights | Lab data **e** field data (CrUX) separados, mobile **e** desktop separados |
+| Source | What to extract |
+|--------|------------------|
+| Public URL | Run `curl -sI` for headers, download HTML, inspect `<head>`, script order, hero images |
+| Lighthouse report | Metrics (LCP/CLS/INP/TBT/FCP/SI), top opportunities, diagnostics, JS treemap |
+| Code | Hero, `<link>`/`<script>` order, image attributes, fonts, critical CSS, plugins (WP), bundle (Next) |
+| PageSpeed Insights | Lab data **and** field data (CrUX) separately, mobile **and** desktop separately |
 
-Para WebFetch / curl em URL pública, consultar [references/data-collection.md](references/data-collection.md). Para mecânica de PSI/Lighthouse/CrUX (lab×field, pesos do score, INP, soft-nav, throttling, PSI API v5), consultar [references/psi-lighthouse-internals.md](references/psi-lighthouse-internals.md).
+For WebFetch / curl on a public URL, see [references/data-collection.md](references/data-collection.md). For PSI/Lighthouse/CrUX internals (lab×field, score weights, INP, soft-nav, throttling, PSI API v5), see [references/psi-lighthouse-internals.md](references/psi-lighthouse-internals.md).
 
-### 3. Classificar por categoria
+### 3. Classify by category
 
-Toda análise é organizada em **12 categorias** (ver [checks/](checks/)):
+Every analysis is organized into **12 categories** (see [checks/](checks/)):
 
-1. Resumo executivo
-2. Métricas PageSpeed (LCP, CLS, INP/TBT, FCP, SI)
-3. Primeira dobra (hero, headline, CTA, CSS crítico)
-4. Imagens
-5. Fontes
+1. Executive summary
+2. PageSpeed metrics (LCP, CLS, INP/TBT, FCP, SI)
+3. First fold (hero, headline, CTA, critical CSS)
+4. Images
+5. Fonts
 6. CSS
 7. JavaScript
-8. Terceiros e tracking
+8. Third-parties and tracking
 9. WordPress / Elementor
-10. Estabilidade visual (CLS)
-11. Rede e servidor
-12. Plano de ação
+10. Visual stability (CLS)
+11. Network and server
+12. Action plan
 
-### 4. Atribuir impacto e severidade
+### 4. Assign impact and severity
 
-Cada problema recebe:
-- **Métrica afetada** (LCP, CLS, INP, TBT, FCP, SI, TTFB).
-- **Severidade** (crítica / alta / média / baixa) — ver [references/severity-rubric.md](references/severity-rubric.md).
-- **Prioridade** (P0 / P1 / P2) — baseada em impacto × custo de correção.
-- **Risco da correção** (quebra layout? quebra tracking? requer regressão visual?).
+Every problem gets:
+- **Affected metric** (LCP, CLS, INP, TBT, FCP, SI, TTFB).
+- **Severity** (critical / high / medium / low) — see [references/severity-rubric.md](references/severity-rubric.md).
+- **Priority** (P0 / P1 / P2) — based on impact × fix cost.
+- **Fix risk** (breaks layout? breaks tracking? requires visual regression?).
 
-### 5. Recomendar correção segura
+### 5. Recommend a safe fix
 
-Para cada problema:
-- O que mudar exatamente (arquivo / seletor / atributo).
-- Por que isso afeta a métrica X.
-- O que NÃO mexer junto.
-- Como testar depois (Lighthouse run, WebPageTest, DevTools Performance, regressão visual).
+For each problem:
+- What exactly to change (file / selector / attribute).
+- Why this affects metric X.
+- What NOT to touch alongside.
+- How to test afterwards (Lighthouse run, WebPageTest, DevTools Performance, visual regression).
 
-Lista de correções seguras vs. arriscadas: [references/safe-fixes.md](references/safe-fixes.md).
+Safe vs risky fix catalog: [references/safe-fixes.md](references/safe-fixes.md).
 
-### 6. Emitir relatório
+### 6. Emit the report
 
-Template obrigatório: [references/report-format.md](references/report-format.md).
+Mandatory template: [references/report-format.md](references/report-format.md).
 
-### 7. Decisão pré-deploy
+### 7. Pre-deploy decision
 
-- Algum problema **crítico** não resolvido → **bloqueia deploy**.
-- Múltiplos **altos** em hero/LCP → **bloqueia** até corrigir os top 3.
-- Apenas **médios/baixos** → **aprovado com ressalvas**.
-- Tudo verde + Core Web Vitals dentro do threshold → **aprovado**.
+- Any unresolved **critical** problem → **blocks deploy**.
+- Multiple **highs** on hero/LCP → **blocks** until the top 3 are fixed.
+- Only **medium/low** → **approved with caveats**.
+- All green + Core Web Vitals within threshold → **approved**.
 
-## Métricas e thresholds (referência rápida)
+## Metrics and thresholds (quick reference)
 
-Valores 2026 do Core Web Vitals (alinhados com Google CrUX). Sempre validar contra [web.dev/vitals](https://web.dev/articles/vitals) se houver dúvida.
+2026 Core Web Vitals values (aligned with Google CrUX). Always validate against [web.dev/vitals](https://web.dev/articles/vitals) if in doubt.
 
-| Métrica | Bom | Precisa melhorar | Ruim |
-|---------|-----|------------------|------|
+| Metric | Good | Needs improvement | Poor |
+|--------|------|--------------------|------|
 | **LCP** (Largest Contentful Paint) | ≤ 2.5s | 2.5s – 4.0s | > 4.0s |
 | **CLS** (Cumulative Layout Shift) | ≤ 0.1 | 0.1 – 0.25 | > 0.25 |
 | **INP** (Interaction to Next Paint) | ≤ 200ms | 200ms – 500ms | > 500ms |
@@ -161,91 +161,91 @@ Valores 2026 do Core Web Vitals (alinhados com Google CrUX). Sempre validar cont
 | **Speed Index** | ≤ 3.4s | 3.4s – 5.8s | > 5.8s |
 | **TTFB** | ≤ 800ms | 800ms – 1800ms | > 1800ms |
 
-Detalhes em [references/metrics-glossary.md](references/metrics-glossary.md).
+Details in [references/metrics-glossary.md](references/metrics-glossary.md).
 
-## Lab Data vs. Field Data — diferenciar SEMPRE
+## Lab Data vs. Field Data — ALWAYS differentiate
 
-- **Lab data (Lighthouse)** — simulação em throttling fixo (Moto G4 / 4G lento). Útil para diagnóstico.
-- **Field data (CrUX)** — dados reais de usuários Chrome nos últimos 28 dias. Útil para priorização real.
-- **Discrepância comum:** Lighthouse mostra LCP 4s mas CrUX mostra 2.1s — usuário real está bem, score do Lighthouse não. **Decida com base no field, valide com lab.**
-- Mobile e desktop **têm rankings separados no Google**. Sempre avaliar ambos.
+- **Lab data (Lighthouse)** — simulation on fixed throttling (Moto G4 / slow 4G). Useful for diagnosis.
+- **Field data (CrUX)** — real Chrome users in the last 28 days. Useful for real prioritization.
+- **Common discrepancy:** Lighthouse shows LCP 4s but CrUX shows 2.1s — real user is fine, Lighthouse score isn't. **Decide based on field, validate with lab.**
+- Mobile and desktop **have separate Google rankings**. Always evaluate both.
 
-## Red Flags — STOP imediatamente
+## Red Flags — STOP immediately
 
-Se você se pegar pensando ou recomendando:
+If you catch yourself thinking or recommending:
 
-- "Adiar todos os scripts com `defer`" — sem mapear dependências de tracking/inline.
-- "Lazy-load em todas as imagens" — incluindo a imagem do LCP.
-- "Remover o Pixel/GTM porque pesa muito" — sem alinhar com marketing.
-- "Trocar Elementor por código nativo" — sem entender o ciclo de edição.
-- "Comprimir a hero pra 30KB" — perdendo qualidade visual da headline.
-- "Remover CSS não usado automaticamente" — pode quebrar estados (hover, modal, error).
-- "Score 100 no Lighthouse é a meta" — meta é Core Web Vitals "good" no field data.
-- "Migrar pra Next.js / framework X resolve" — sem entender o problema real.
+- "Defer all scripts" — without mapping tracking/inline dependencies.
+- "Lazy-load every image" — including the LCP image.
+- "Remove the Pixel/GTM because it's heavy" — without aligning with marketing.
+- "Replace Elementor with native code" — without understanding the editing cycle.
+- "Compress the hero down to 30KB" — losing headline visual quality.
+- "Remove unused CSS automatically" — may break states (hover, modal, error).
+- "Lighthouse score 100 is the goal" — the goal is Core Web Vitals "good" in field data.
+- "Migrate to Next.js / framework X solves it" — without understanding the real problem.
 
-→ STOP. Volte para a etapa 4 (impacto × risco) antes de recomendar.
+→ STOP. Go back to step 4 (impact × risk) before recommending.
 
 ## Excuse | Reality
 
-| Desculpa | Realidade |
-|----------|-----------|
-| "Lighthouse só roda em mobile lento, não é real" | É o ranking que o Google usa. Field data corrobora. |
-| "Score 80 já tá bom" | Core Web Vitals é binário (passa/não passa). 80 pode falhar no LCP. |
-| "Otimizei tudo e o score caiu" | Você provavelmente quebrou o tracking inline ou o LCP. Reaudite. |
-| "O cliente quer 100" | 100 é frágil. Meta é "all green CWV" estável. Eduque o cliente. |
-| "Vou usar plugin X que faz tudo" | Plugins fazem 60% e quebram 30%. Audite o resultado, não o plugin. |
-| "Mobile não importa, audiência é desktop" | Mobile-first index do Google ranqueia pelo mobile. |
-| "Removi as fontes custom e ficou rápido" | Conversão caiu junto. Otimize a fonte, não remova. |
+| Excuse | Reality |
+|--------|---------|
+| "Lighthouse only runs on slow mobile, it's not real" | It's the ranking Google uses. Field data corroborates. |
+| "Score 80 is good enough" | Core Web Vitals is binary (pass/fail). 80 can fail LCP. |
+| "I optimized everything and the score dropped" | You probably broke inline tracking or LCP. Re-audit. |
+| "Client wants 100" | 100 is fragile. Goal is stable "all green CWV". Educate the client. |
+| "I'll use plugin X that does everything" | Plugins do 60% and break 30%. Audit the result, not the plugin. |
+| "Mobile doesn't matter, my audience is desktop" | Google's mobile-first index ranks by mobile. |
+| "I removed custom fonts and it got fast" | Conversion dropped too. Optimize the font, don't remove. |
 
-## Checks por domínio
+## Domain checks
 
-Use o arquivo da check apropriada quando a sessão tocar nesses arquivos/áreas:
+Use the appropriate check file when the session touches these files/areas:
 
-- [checks/hero-and-lcp.md](checks/hero-and-lcp.md) — primeira dobra, imagem LCP, headline.
-- [checks/images.md](checks/images.md) — formato, dimensões, lazy, preload, responsivo.
-- [checks/fonts.md](checks/fonts.md) — Google Fonts, locais, `font-display`, preload, fallback.
-- [checks/css.md](checks/css.md) — render-blocking, CSS crítico, unused CSS, Tailwind, Elementor CSS.
-- [checks/javascript.md](checks/javascript.md) — defer/async, bundle, hydration, libs desnecessárias.
+- [checks/hero-and-lcp.md](checks/hero-and-lcp.md) — first fold, LCP image, headline.
+- [checks/images.md](checks/images.md) — format, dimensions, lazy, preload, responsive.
+- [checks/fonts.md](checks/fonts.md) — Google Fonts, local fonts, `font-display`, preload, fallback.
+- [checks/css.md](checks/css.md) — render-blocking, critical CSS, unused CSS, Tailwind, Elementor CSS.
+- [checks/javascript.md](checks/javascript.md) — defer/async, bundle, hydration, unnecessary libs.
 - [checks/third-party-tracking.md](checks/third-party-tracking.md) — Pixel, GTM, GA4, Hotmart, AC, Make, chats.
-- [checks/wordpress-elementor.md](checks/wordpress-elementor.md) — plugins, assets globais, cache, LiteSpeed, Cloudflare.
-- [checks/layout-stability.md](checks/layout-stability.md) — CLS, reservar espaço, fonts swap, embeds.
+- [checks/wordpress-elementor.md](checks/wordpress-elementor.md) — plugins, global assets, cache, LiteSpeed, Cloudflare.
+- [checks/layout-stability.md](checks/layout-stability.md) — CLS, reserving space, fonts swap, embeds.
 - [checks/network-server.md](checks/network-server.md) — cache, CDN, Brotli, TTFB, preconnect.
 
-## Regras invioláveis
+## Inviolable rules
 
-1. **Nunca recomendar lazy-load na imagem do LCP** — sempre `fetchpriority="high"` + sem `loading="lazy"`.
-2. **Nunca remover ou mover scripts de tracking sem confirmar com o usuário** — pode quebrar atribuição.
-3. **Sempre separar lab e field data** — não tratar Lighthouse score como verdade absoluta.
-4. **Sempre informar mobile e desktop separadamente** — são rankings diferentes.
-5. **Nunca recomendar `display: none` para esconder problema de CLS** — corrigir reservando espaço.
-6. **Nunca dropar UTMs/query string** em otimizações de redirect ou canonical.
-7. **Toda recomendação tem que apontar arquivo/linha quando aplicável** — sem "otimize o CSS" genérico.
-8. **Toda análise tem mobile-first como default** — desktop é complemento.
-9. **Relatório sempre gerado** — mesmo se tudo estiver verde.
-10. **Score isolado não é critério de aprovação** — Core Web Vitals no field é.
+1. **Never recommend lazy-load on the LCP image** — always `fetchpriority="high"` + no `loading="lazy"`.
+2. **Never remove or move tracking scripts without confirming with the user** — may break attribution.
+3. **Always separate lab and field data** — don't treat Lighthouse score as absolute truth.
+4. **Always report mobile and desktop separately** — they're different rankings.
+5. **Never recommend `display: none` to hide a CLS problem** — fix it by reserving space.
+6. **Never drop UTMs/query string** in redirect or canonical optimizations.
+7. **Every recommendation must point to a file/line when applicable** — no generic "optimize the CSS".
+8. **Every analysis is mobile-first by default** — desktop is complement.
+9. **Always emit the report** — even when everything is green.
+10. **An isolated score is not approval criteria** — Core Web Vitals in field is.
 
-## Quando NÃO usar
+## When NOT to use
 
-- Auditoria de SEO conteúdo/keywords → use `seo-audit`.
-- Auditoria de acessibilidade profunda (WCAG AA/AAA) → skill dedicada de a11y.
-- Auditoria de segurança de headers → `security-auditor` / `seguranca`.
-- Bug de renderização visual (não relacionado a performance) → debug normal.
-- Refactor de backend / API → fora de escopo.
+- SEO content/keyword auditing → use `seo-audit`.
+- Deep accessibility auditing (WCAG AA/AAA) → dedicated a11y skill.
+- Security header auditing → `security-auditor` / `seguranca`.
+- Visual rendering bug (not performance-related) → regular debug.
+- Backend / API refactor → out of scope.
 
-## Skills relacionadas
+## Related skills
 
-- **congruence** — verifica se claims na landing batem com o que o código faz. Use depois de uma rodada de performance-audit que tenha alterado copy/CTA.
-- **seo-audit** — auditoria de SEO técnico e on-page. Complementar.
-- **ux-ui-perfectionist** — revisão de UI/UX. Use em conjunto se a otimização tocar layout.
-- **ai-seo** — otimização para LLM search/AI Overviews. Complementar.
+- **congruence** — checks if landing page claims match what the code does. Use after a `performance-audit` round that touched copy/CTA.
+- **seo-audit** — technical and on-page SEO audit. Complementary.
+- **ux-ui-perfectionist** — UI/UX review. Use together if the optimization touches layout.
+- **ai-seo** — optimization for LLM search/AI Overviews. Complementary.
 
-## Por que esta skill existe
+## Why this skill exists
 
-Otimizar performance virou folclore: time troca framework, compra plugin, ativa "modo turbo" do CDN, e o score sobe 5 pontos enquanto a conversão cai 20%. Esta skill existe para **separar o que o Lighthouse mede do que o usuário sente**, e garantir que cada correção:
+Optimizing performance has become folklore: teams swap frameworks, buy plugins, turn on the CDN's "turbo mode", and the score goes up 5 points while conversion drops 20%. This skill exists to **separate what Lighthouse measures from what the user feels**, and ensure every fix:
 
-- Tem evidência concreta no relatório/código.
-- Tem prioridade baseada em impacto × custo.
-- Tem teste de regressão pra layout, tracking e funcionalidade.
-- Não é cargo cult ("ouvi dizer que defer melhora").
+- Has concrete evidence in the report/code.
+- Has priority based on impact × cost.
+- Has a regression test for layout, tracking and functionality.
+- Is not cargo cult ("I heard defer makes it faster").
 
-O objetivo final não é o score. É **a página que carrega rápido pro usuário real, mantém a conversão e ainda passa nos Core Web Vitals**.
+The final goal is not the score. It is **the page that loads fast for the real user, keeps converting, and still passes Core Web Vitals**.

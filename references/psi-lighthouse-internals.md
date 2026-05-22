@@ -84,21 +84,53 @@ GET https://www.googleapis.com/pagespeedonline/v5/runPagespeed
 | Param | Valores | Notas |
 |-------|---------|-------|
 | `url` | URL pública | obrigatório |
-| `strategy` | `mobile` (default) / `desktop` | |
-| `category` | `performance`, `accessibility`, `best-practices`, `seo`, `pwa` | repetível; PWA deprecated/removed em LH 12 |
+| `strategy` | `desktop` (default oficial) / `mobile` | ⚠️ default é `desktop`. Para mobile-first audit, **sempre passar explícito** `strategy=mobile` |
+| `category` | `performance`, `accessibility`, `best-practices`, `seo` | repetível; **`pwa` removido em LH 12 (2025)** |
 | `locale` | `pt-BR`, `en-US`, ... | afeta strings do report |
-| `key` | API key GCP | opcional; sem ela quotas são muito baixas |
+| `key` | API key GCP | opcional mas crítico — sem ela pode disparar fluxo de captcha (ver `captchaResult`) |
+| `captchaToken` | string | usado em resposta a `captchaResult: CAPTCHA_NEEDED` |
 | `utm_source`/`utm_campaign` | string | analytics |
 
 ### Rate limits
-- **Sem API key**: keyed por IP, ~1 QPS, poucos hundred queries/day, 429 frequente.
-- **Com API key**: **400 QPS por 100s** e **25.000 queries/dia** default. Aumentos via GCP Console.
+- **Sem API key**: keyed por IP, ~1 QPS, poucas centenas/dia, 429 frequente, **pode disparar captcha**.
+- **Com API key**: a doc oficial PSI v5 **não publica QPS/dia atualmente**. Valores históricos comunitários ~400 QPS por 100s e ~25.000 queries/dia. **Sempre verificar no Cloud Console** (APIs & Services → Quotas) por projeto — Google ajusta sem aviso prévio.
+- **CrUX API** tem quota separada (~25k/dia default, ajustável).
+
+### 🚨 Deprecação anunciada (ago/2025) — CrUX dentro do PSI vai sair
+
+A documentação `get-started` (atualizada 28-ago-2025) diz textualmente:
+
+> "We plan to discontinue including real-world data from the Chrome User Experience Report in this API. We recommend the CrUX API or the CrUX History API instead."
+
+**Impacto na skill:**
+- Os campos `loadingExperience` e `originLoadingExperience` do PSI **serão removidos** em data futura não anunciada.
+- A partir dessa transição, PSI fica **só com lab data** (Lighthouse).
+- **Migrar para CrUX API** para field data: `https://chromeuxreport.googleapis.com/v1/records:queryRecord` (e `queryHistoryRecord` para histórico).
+- Monitorar: developer.chrome.com/docs/crux/api · developers.google.com/speed/docs/insights/v5/about
 
 ### Estrutura de resposta (top-level)
-- `lighthouseResult` — JSON Lighthouse lab completo: `categories.performance.score`, `audits[*]`, `configSettings`, `environment`.
-- `loadingExperience` — CrUX field page-level: `metrics.{LARGEST_CONTENTFUL_PAINT_MS, CUMULATIVE_LAYOUT_SHIFT_SCORE, INTERACTION_TO_NEXT_PAINT, EXPERIMENTAL_TIME_TO_FIRST_BYTE, FIRST_CONTENTFUL_PAINT_MS}` com `percentile`, `distributions`, `category`.
-- `originLoadingExperience` — mesmo shape, origin-level (fallback).
+- `kind`: `"pagespeedonline#result"` (constante).
+- `captchaResult`: enum — `CAPTCHA_BLOCKING`, `CAPTCHA_NEEDED`, `CAPTCHA_NOT_NEEDED`, `CAPTCHA_MATCHED`, `CAPTCHA_UNMATCHED`.
+- `lighthouseResult` — JSON Lighthouse lab completo:
+  - `categories.performance.score`
+  - `audits[*]` com `id`, `title`, `score`, `scoreDisplayMode`, `displayValue`, `details`
+  - `categories[*].auditRefs[]` com `{id, weight, group}` (permite recalcular score ponderado local)
+  - `configSettings` (`emulatedFormFactor`, `locale`, `onlyCategories`)
+  - `environment` (`networkUserAgent`, `hostUserAgent`, `benchmarkIndex`)
+  - `timing.total`, `runWarnings[]`, `i18n`
+  - **`runtimeError`** — `{code, message}` populado quando Lighthouse rodou mas a página falhou (ex.: `NO_FCP`, `ERRORED_DOCUMENT_REQUEST`, `FAILED_DOCUMENT_REQUEST`). **HTTP é 200 mesmo com runtimeError — checar explicitamente em CI.**
+- `loadingExperience` — CrUX field page-level (será deprecated):
+  - `metrics.{FIRST_CONTENTFUL_PAINT_MS, LARGEST_CONTENTFUL_PAINT_MS, CUMULATIVE_LAYOUT_SHIFT_SCORE, INTERACTION_TO_NEXT_PAINT, EXPERIMENTAL_TIME_TO_FIRST_BYTE}`
+  - Cada métrica: `{percentile, category: FAST|AVERAGE|SLOW|NONE, distributions[]: {min, max, proportion}}`
+  - `overall_category` no nível pai
+- `originLoadingExperience` — mesmo shape, origin-level (fallback; será deprecated).
 - `analysisUTCTimestamp`, `id`, `version`.
+
+### `scoreDisplayMode` valores oficiais
+`binary`, `numeric`, `informative`, `manual`, `not_applicable`, `error`. Score `null` é válido quando mode é `manual`/`informative`/`not_applicable`.
+
+### `audits[*].details.type` (não enumerado pela API)
+Não é contrato estável — vem do schema do Lighthouse e muda entre versões. Valores comuns observados: `opportunity`, `table`, `debugdata`, `criticalrequestchain`, `filmstrip`, `screenshot`, `treemap-data`, `list`.
 
 ### Exemplo prático (extrair só o essencial)
 ```bash
@@ -111,7 +143,41 @@ curl -s "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://
   }'
 ```
 
-Fontes: developers.google.com/speed/docs/insights/v5/about · developers.google.com/speed/docs/insights/v5/get-started
+### Erros / HTTP codes (não enumerados oficialmente — comportamento observado)
+- **400** — `url` ausente/malformado, `strategy` inválido.
+- **403** — key inválida, API não habilitada no projeto, referer restriction violada.
+- **429** — quota excedida (QPS ou daily).
+- **500** — falha interna; **retry com backoff exponencial** (1s → 2s → 4s + jitter).
+- **200 + `lighthouseResult.runtimeError`** — analisar antes de declarar sucesso (gotcha clássico em CI/CD).
+
+Formato de erro padrão Google: `{error: {code, message, errors:[{domain, reason, message}]}}`.
+
+### Autenticação
+- `key=` na query é o método oficial. PSI **não exige OAuth**.
+- Header `Authorization: Bearer <token>` não é necessário.
+- Para keys embarcadas no front-end, restringir por referer/IP no Cloud Console.
+
+### Pricing
+- **PSI API**: gratuita, sem tier pago.
+- **CrUX API**: gratuita.
+- **CrUX BigQuery**: dataset gratuito, mas queries cobram taxa padrão BigQuery (~$6.25/TiB scaneado, primeiro 1 TiB/mês grátis). Cuidado com `SELECT *` em tabelas mensais (TBs).
+- **pagespeed.web.dev** (UI): gratuita, usa a mesma API.
+
+### Limitações de URL
+- Páginas devem ser **públicas (crawlable + indexável)**.
+- ❌ Não auditável: localhost, `127.0.0.1`, IPs privados, URLs atrás de basic-auth ou cookie-auth, redirects internos.
+- Páginas com `noindex` parcial **funcionam no lab** mas **sem CrUX field data**.
+- URLs com query strings são distintas (afeta agregação CrUX que normaliza).
+
+### CI/CD best practices
+- Sempre passar `key=` (evita `captchaResult` bloqueante e usa quota do projeto).
+- **Checar `lighthouseResult.runtimeError` antes do `score`** — score `null` ou inválido pode passar despercebido.
+- Rodar `strategy=mobile` e `strategy=desktop` em paralelo (chamadas separadas; endpoint não combina).
+- Para Core Web Vitals reais, **migrar para CrUX API** antes da descontinuação no PSI.
+- Cache de resposta: `analysisUTCTimestamp` permite dedupe; CrUX atualiza diariamente, então TTL ~24h é seguro.
+- Retries: 500/429 com backoff; 400/403 são determinísticos, não retentar.
+
+Fontes: developers.google.com/speed/docs/insights/v5/about · developers.google.com/speed/docs/insights/v5/get-started · developers.google.com/speed/docs/insights/v5/reference/pagespeedapi/runpagespeed · developer.chrome.com/docs/crux/api
 
 ---
 
